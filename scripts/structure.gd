@@ -1,6 +1,8 @@
 extends Resource
 class_name Structure
 
+var mesh_id: int
+
 @export_subgroup("Model")
 @export var model:PackedScene # Model of the structure
 

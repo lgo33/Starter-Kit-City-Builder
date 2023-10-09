@@ -9,7 +9,7 @@ var index:int = 0 # Index of structure being built
 @export var selector:Node3D # The 'cursor'
 @export var selector_container:Node3D # Node that holds a preview of the structure
 @export var view_camera:Camera3D # Used for raycasting mouse
-@export var gridmap:GridMap
+@export var gridmap:CityMap
 @export var cash_display:Label
 
 var plane:Plane # Used for raycasting mouse
@@ -29,11 +29,23 @@ func _ready():
 	for structure in structures:
 		
 		var id = mesh_library.get_last_unused_item_id()
+		gridmap.structures[id] = structure
+		structure.mesh_id = id
 		
 		mesh_library.create_item(id)
 		mesh_library.set_item_mesh(id, get_mesh(structure.model))
 		mesh_library.set_item_mesh_transform(id, Transform3D())
-		
+
+		if structure is Snappable:
+			for sub in ['corner_model', 'straight_model', 'tcross_model', 'intersection_model']:				
+				id = mesh_library.get_last_unused_item_id()
+				structure.mesh_ids_snap[sub] = id
+				gridmap.structures[id] = structure
+				mesh_library.create_item(id)
+				mesh_library.set_item_mesh(id, get_mesh(structure[sub]))
+				mesh_library.set_item_mesh_transform(id, Transform3D())
+			print(structure.mesh_ids_snap)
+
 	gridmap.mesh_library = mesh_library
 	
 	update_structure()
@@ -70,17 +82,16 @@ func get_mesh(packed_scene):
 			for j in scene_state.get_node_property_count(i):
 				var prop_name = scene_state.get_node_property_name(i, j)
 				if prop_name == "mesh":
-					var prop_value = scene_state.get_node_property_value(i, j)
-					
+					var prop_value = scene_state.get_node_property_value(i, j)					
 					return prop_value.duplicate()
 
 # Build (place) a structure
 
 func action_build(gridmap_position):
 	if Input.is_action_just_pressed("build"):
-		
 		var previous_tile = gridmap.get_cell_item(gridmap_position)
 		gridmap.set_cell_item(gridmap_position, index, gridmap.get_orthogonal_index_from_basis(selector.basis))
+		gridmap.check_structure(gridmap_position)
 		
 		if previous_tile != index:
 			map.cash -= structures[index].price
@@ -97,6 +108,7 @@ func action_demolish(gridmap_position):
 func action_rotate():
 	if Input.is_action_just_pressed("rotate"):
 		selector.rotate_y(deg_to_rad(90))
+		# print(gridmap.get_orthogonal_index_from_basis(selector.basis))
 
 # Toggle between structures to build
 
@@ -168,5 +180,6 @@ func loadStructures():
 			pass
 		else:
 			print("loading: " + file_name)
-			structures.append(ResourceLoader.load("res://structures/"+file_name))
+			var new_structure = ResourceLoader.load("res://structures/"+file_name)
+			structures.append(new_structure)
 		file_name = dir.get_next()
