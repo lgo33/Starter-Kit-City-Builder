@@ -8,6 +8,7 @@ var index:int = 0 # Index of structure being built
 
 @export var selector:Node3D # The 'cursor'
 @export var selector_container:Node3D # Node that holds a preview of the structure
+@export var highlight:Node3D
 @export var view_camera:Camera3D # Used for raycasting mouse
 @export var gridmap:CityMap
 @export var cash_display:Label
@@ -73,6 +74,12 @@ func _process(delta):
 	action_build(gridmap_position)
 	action_demolish(gridmap_position)
 
+# put the highlight sprite
+
+func put_highlight(gridmap_position):
+	highlight.position = gridmap_position
+	highlight.visible = true
+
 # Retrieve the mesh from a PackedScene, used for dynamically creating a MeshLibrary
 
 func get_mesh(packed_scene):
@@ -102,6 +109,10 @@ func action_build(gridmap_position):
 func action_demolish(gridmap_position):
 	if Input.is_action_just_pressed("demolish"):
 		gridmap.set_cell_item(gridmap_position, -1)
+		for nbr in gridmap.get_neighbors(gridmap_position):
+			print(nbr)
+			put_highlight(nbr)
+			gridmap.check_snap(nbr, false)
 
 # Rotates the 'cursor' 90 degrees
 
