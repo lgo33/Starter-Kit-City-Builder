@@ -15,11 +15,10 @@ shadow_color = Color(0, 0, 0, 0.392157)
 
 [node name="Main" type="Node3D"]
 
-[node name="Builder" type="Node3D" parent="." node_paths=PackedStringArray("selector", "selector_container", "highlight", "view_camera", "gridmap", "cash_display")]
+[node name="Builder" type="Node3D" parent="." node_paths=PackedStringArray("selector", "selector_container", "view_camera", "gridmap", "cash_display")]
 script = ExtResource("1_jybm7")
 selector = NodePath("Selector")
 selector_container = NodePath("Selector/Container")
-highlight = NodePath("Highlight")
 view_camera = NodePath("../View/Camera")
 gridmap = NodePath("../CityMap")
 cash_display = NodePath("../CanvasLayer/Control/Cash")
@@ -32,12 +31,7 @@ texture = ExtResource("4_wr1wv")
 
 [node name="Container" type="Node3D" parent="Builder/Selector"]
 
-[node name="Highlight" type="Node3D" parent="Builder"]
-visible = false
-
-[node name="Sprite" type="Sprite3D" parent="Builder/Highlight"]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0.06, 0)
-texture = ExtResource("4_wr1wv")
+[node name="Highlights" type="Node2D" parent="Builder"]
 
 [node name="View" type="Node3D" parent="."]
 transform = Transform3D(0.707107, -0.40558, 0.579228, 0, 0.819152, 0.573576, -0.707107, -0.40558, 0.579228, 0, 0, 0)

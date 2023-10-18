@@ -1,14 +1,13 @@
 extends Node3D
 
 var structures: Array[Structure] = []
-
+var highlight: PackedScene = preload("res://scenes/highlight.tscn")
 var map:DataMap
 
 var index:int = 0 # Index of structure being built
 
 @export var selector:Node3D # The 'cursor'
 @export var selector_container:Node3D # Node that holds a preview of the structure
-@export var highlight:Node3D
 @export var view_camera:Camera3D # Used for raycasting mouse
 @export var gridmap:CityMap
 @export var cash_display:Label
@@ -77,8 +76,12 @@ func _process(delta):
 # put the highlight sprite
 
 func put_highlight(gridmap_position):
-	highlight.position = gridmap_position
-	highlight.visible = true
+	# var hl = highlight.new()
+	var hl = highlight.instantiate() #.duplicate()
+	hl.position = gridmap_position
+	hl.visible = true
+	$Highlights.add_child(hl)
+
 
 # Retrieve the mesh from a PackedScene, used for dynamically creating a MeshLibrary
 
